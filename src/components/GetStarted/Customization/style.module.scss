@@ -1,0 +1,84 @@
+.container {
+  @apply w-screen h-screen flex items-center justify-center;
+  .step {
+    @apply mx-auto my-0 px-16 py-12 inline-flex flex-col justify-center items-center bg-white rounded-2xl shadow-md;
+    .head {
+      @apply mb-5 flex flex-col items-center;
+    }
+    .emoji {
+      @apply mb-2 w-12 h-12;
+      animation: wave 1s;
+    }
+    .title {
+      @apply text-xl font-bold text-zinc-700;
+    }
+    .description {
+      @apply text-base text-zinc-700;
+    }
+    .block {
+      @apply flex flex-col text-center items-center;
+      label {
+        @apply rounded-2xl overflow-hidden cursor-pointer flex items-center justify-center relative;
+        &::before {
+          content: '';
+          inset: 0;
+          position: absolute;
+          z-index: 10;
+          transition: all 150ms ease-in-out;
+        }
+        &:hover::before {
+          backdrop-filter: blur(1.5px);
+          background-color: rgba($color: #000000, $alpha: 0.55);
+        }
+        &:hover .icon {
+          @apply opacity-100;
+        }
+        .icon {
+          @apply w-10 h-10 opacity-0 z-50 text-white absolute transition-all duration-500;
+        }
+      }
+      .username {
+        @apply mb-1 text-base font-medium opacity-40;
+      }
+      .navbar {
+        @apply mt-5 gap-4 w-full flex items-center justify-center;
+      }
+    }
+  }
+}
+
+@keyframes wave {
+  0% {
+    transform: rotate(0deg);
+  }
+  10% {
+    transform: rotate(-10deg);
+  }
+  20% {
+    transform: rotate(10deg);
+  }
+  30% {
+    transform: rotate(-12deg);
+  }
+  40% {
+    transform: rotate(10deg);
+  }
+  50% {
+    transform: rotate(-12deg);
+  }
+  60% {
+    transform: rotate(10deg);
+  }
+  70% {
+    transform: rotate(-12deg);
+  }
+  80% {
+    transform: rotate(10deg);
+  }
+  90% {
+    transform: rotate(-10deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}

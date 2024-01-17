@@ -1,0 +1,42 @@
+.header {
+  @apply w-full pt-8 px-4 py-4 flex items-center justify-between;
+  .logotype {
+    @apply px-4 py-2 gap-2 flex items-center bg-white rounded-3xl shadow-md hover:bg-zinc-50 transition-colors duration-200;
+    img {
+      @apply w-9 h-9;
+    }
+    h3 {
+      @apply text-lg font-extrabold;
+    }
+  }
+  .user {
+    @apply gap-3 flex items-center;
+    span {
+      @apply px-3 py-2 text-base font-extrabold bg-white rounded-xl shadow-md hover:bg-zinc-50 transition-colors duration-200;
+    }
+  }
+  .logotype:hover img {
+    animation: wave 0.75s;
+  }
+}
+
+@keyframes wave {
+  0% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(-12deg);
+  }
+  40% {
+    transform: rotate(10deg);
+  }
+  60% {
+    transform: rotate(-10deg);
+  }
+  80% {
+    transform: rotate(12deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}

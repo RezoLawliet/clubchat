@@ -1,0 +1,138 @@
+.container {
+  @apply w-screen h-screen flex items-center justify-center relative overflow-hidden;
+  .step {
+    @apply mx-auto my-0 z-10 inline-flex flex-col justify-center items-center;
+    .head {
+      @apply mb-4 gap-3 flex items-center;
+    }
+    .emoji {
+      @apply w-10 h-8;
+      animation: wave 1s;
+    }
+    .title {
+      @apply text-xl font-bold text-zinc-900;
+    }
+    .slogan {
+      font-family: 'Open Sans', sans-serif;
+      @apply mb-10 text-7xl font-bold lowercase text-zinc-900;
+    }
+  }
+  .step:hover .emoji {
+    animation: wave 0.75s infinite;
+  }
+}
+.particles {
+  @apply inset-0 absolute;
+  .particle {
+    @apply w-8 h-8 -bottom-52 absolute;
+    background-image: linear-gradient(
+      135deg,
+      rgba(15, 15, 15, 1),
+      rgba(0, 0, 0, 0.85),
+      rgba(35, 35, 35, 0.75),
+      rgba(45, 45, 45, 0.7)
+    );
+    animation: float 25s linear infinite;
+  }
+  .particle:nth-child(1) {
+    left: 25%;
+    height: 6rem;
+    width: 6rem;
+    animation-delay: 1s;
+    animation-duration: 15s;
+  }
+  .particle:nth-child(2) {
+    left: 10%;
+    height: 2rem;
+    width: 2rem;
+    animation-delay: 4s;
+    animation-duration: 15s;
+  }
+  .particle:nth-child(3) {
+    left: 65%;
+    height: 9rem;
+    width: 9rem;
+    animation-delay: 7s;
+    animation-duration: 10s;
+  }
+  .particle:nth-child(4) {
+    left: 45%;
+    height: 6rem;
+    width: 6rem;
+    animation-delay: 7s;
+    animation-duration: 20s;
+  }
+  .particle:nth-child(5) {
+    left: 55%;
+    height: 4.5rem;
+    width: 4.5rem;
+    animation-delay: 10s;
+    animation-duration: 18s;
+  }
+  .particle:nth-child(6) {
+    left: 35%;
+    height: 7rem;
+    width: 7rem;
+    animation-delay: 10s;
+    animation-duration: 22s;
+  }
+  .particle:nth-child(7) {
+    left: 15%;
+    height: 11rem;
+    width: 11rem;
+    animation-delay: 11s;
+    animation-duration: 7s;
+  }
+  .particle:nth-child(8) {
+    left: 75%;
+    height: 10rem;
+    width: 10rem;
+    animation-delay: 11s;
+    animation-duration: 9s;
+  }
+  .particle:nth-child(9) {
+    left: 85%;
+    height: 5rem;
+    width: 5rem;
+    animation-delay: 12s;
+    animation-duration: 4s;
+  }
+  .particle:nth-child(10) {
+    left: 95%;
+    height: 5.5rem;
+    width: 5.5rem;
+    animation-delay: 13s;
+    animation-duration: 25s;
+  }
+}
+
+@keyframes wave {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-12deg);
+  }
+  50% {
+    transform: rotate(12deg);
+  }
+  75% {
+    transform: rotate(-12deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0) rotate(0);
+    opacity: 0;
+    border-radius: 0;
+  }
+  100% {
+    transform: translateY(-110rem) rotate(1080deg);
+    opacity: 1;
+    border-radius: 50%;
+  }
+}

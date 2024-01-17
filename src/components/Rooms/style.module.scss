@@ -1,0 +1,12 @@
+.rooms {
+  @apply mb-12 pt-10;
+  .head {
+    @apply mb-14 px-4 flex items-center justify-between;
+    .title {
+      @apply text-3xl font-extrabold;
+    }
+  }
+  .container {
+    @apply gap-y-10 grid grid-cols-[repeat(3,_384px)] justify-between;
+  }
+}

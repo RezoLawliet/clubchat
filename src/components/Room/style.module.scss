@@ -1,0 +1,85 @@
+.room {
+  border-radius: 2.5rem 2.5rem 0 0;
+  @apply px-16 py-4 h-96 flex flex-col grow bg-white shadow-md overflow-hidden;
+  .head {
+    @apply px-2 py-2 flex items-center justify-between;
+    .title {
+      @apply text-3xl font-extrabold truncate;
+    }
+  }
+  .members {
+    @apply flex flex-col grow;
+    .speakers {
+      @apply gap-5 inline-flex;
+    }
+  }
+  .chat {
+    @apply p-2 h-full flex flex-col grow overflow-hidden relative;
+    .messages {
+      @apply p-4 w-full h-full grow flex flex-col bg-zinc-50 rounded-xl overflow-auto;
+      .separator {
+        @apply mx-auto my-2 text-lg font-extrabold;
+      }
+      .message {
+        @apply mx-4 my-2 gap-1 inline-flex transition-all duration-200;
+        .sender {
+          @apply font-bold;
+        }
+        .block {
+          @apply w-fit flex flex-col;
+        }
+        .sublime {
+          @apply px-5 py-3 w-fit flex flex-col rounded-md shadow-md bg-white;
+          p {
+            @apply text-base;
+          }
+          .details {
+            @apply inline-flex self-start;
+            .timestamp {
+              @apply text-xs opacity-80;
+            }
+          }
+        }
+      }
+      .other {
+        @apply mr-auto;
+        .sender {
+          @apply text-left;
+        }
+        .sublime {
+          @apply border;
+        }
+      }
+      .me {
+        @apply ml-auto;
+        .sender {
+          @apply text-right;
+        }
+        .sublime {
+          @apply text-white bg-zinc-700;
+          .details {
+            @apply self-end;
+          }
+        }
+      }
+    }
+  }
+  .form {
+    @apply px-20 py-2 gap-1 w-full flex;
+    .input {
+      @apply mr-1 px-4 py-3 border-2 border-zinc-300 grow rounded-md focus:outline-none focus:border-blue-500;
+    }
+    .submit {
+      @apply px-4 font-semibold text-white bg-blue-500 rounded-md transition-all duration-300 ease-in-out cursor-pointer;
+      &:hover {
+        @apply bg-blue-600;
+      }
+    }
+    .attach {
+      @apply px-4 font-semibold text-white bg-teal-500 rounded-md transition-all duration-300 ease-in-out cursor-pointer;
+      &:hover {
+        @apply bg-teal-400;
+      }
+    }
+  }
+}

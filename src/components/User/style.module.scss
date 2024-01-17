@@ -1,0 +1,46 @@
+.link {
+  @apply gap-1 px-12 py-6 inline-flex text-xl font-extrabold items-center;
+}
+.user {
+  @apply pt-6;
+  .head {
+    @apply mb-10 flex items-center justify-between;
+    .hero {
+      @apply gap-5 px-8 py-6 flex items-center bg-white rounded-2xl shadow-md;
+      .username {
+        @apply mr-10;
+        h2 {
+          @apply text-2xl font-extrabold;
+        }
+        span {
+          @apply opacity-40 text-base font-bold;
+        }
+      }
+      .control {
+        @apply gap-2 flex items-center;
+        .subscribe {
+          @apply px-5 py-2 text-zinc-50 font-bold bg-blue-500 rounded-md
+          hover:bg-blue-600 active:bg-blue-800 transition-colors duration-300;
+        }
+      }
+    }
+    .statistic {
+      @apply gap-6 px-8 py-6 flex items-center bg-white rounded-2xl shadow-md;
+      .counter {
+        @apply text-center;
+        h2 {
+          @apply text-3xl font-extrabold;
+        }
+        span {
+          @apply opacity-40 text-base font-bold;
+        }
+      }
+    }
+  }
+  .description {
+    @apply px-8 py-6 bg-white rounded-2xl shadow-md;
+    p {
+      @apply text-lg;
+    }
+  }
+}

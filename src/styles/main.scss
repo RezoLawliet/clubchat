@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;500;600;700;800;900&family=Open+Sans:wght@300;400;500;600;700;800&display=swap');
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  color: #151515;
+  background-color: #f8f8f8;
+}
+
+#__next {
+  height: 100%;
+}
+
+.container {
+  margin: 0 auto;
+  padding: 0 10px;
+  max-width: 1240px;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0 0 0;
+}
+
+::-webkit-scrollbar {
+  @apply w-2;
+}
+::-webkit-scrollbar-track {
+  @apply bg-zinc-50 rounded-2xl;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-zinc-200 rounded-xl;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-zinc-300;
+}

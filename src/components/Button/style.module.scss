@@ -1,0 +1,45 @@
+.blue {
+  @apply px-6 py-3 gap-1 text-center font-bold rounded-md inline-flex items-center text-white bg-blue-500
+hover:bg-blue-600 disabled:bg-zinc-300 transition-colors duration-300;
+  .icon {
+    @apply w-5 h-5;
+  }
+}
+.green {
+  @apply px-6 py-3 gap-1 text-center font-bold rounded-md inline-flex items-center justify-center text-white bg-green-500
+hover:bg-green-400 active:bg-green-600 transition-colors duration-200;
+  .icon {
+    @apply w-5 h-5;
+  }
+}
+.disabled {
+  @apply animate-pulse pointer-events-none;
+}
+.red {
+  @apply px-6 py-3 gap-1 text-center font-bold rounded-md inline-flex items-center text-white bg-red-600
+hover:bg-red-500 disabled:bg-zinc-300 transition-colors duration-300;
+  .icon {
+    @apply w-5 h-5;
+  }
+}
+.white {
+  @apply px-6 py-3 gap-1 text-center font-bold rounded-md inline-flex items-center text-blue-500 bg-white border border-blue-500
+disabled:bg-zinc-300 transition-colors duration-300;
+  .icon {
+    @apply w-5 h-5;
+  }
+}
+.transparent {
+  @apply px-6 py-3 gap-1 text-center font-bold rounded-md inline-flex items-center text-zinc-700 bg-white border border-zinc-300
+disabled:bg-zinc-300 transition-colors duration-300;
+  .icon {
+    @apply w-5 h-5;
+  }
+}
+.bordered {
+  @apply px-6 py-3 gap-1 text-center font-bold rounded-md inline-flex items-center text-red-500 bg-white border border-red-500
+disabled:bg-zinc-300 transition-colors duration-300;
+  .icon {
+    @apply w-5 h-5;
+  }
+}

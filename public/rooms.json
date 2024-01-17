@@ -1,0 +1,43 @@
+[
+  {
+    "id": "1",
+    "title": "Test room 1",
+    "avatars": ["https://source.unsplash.com/random/100x100?1"],
+    "members": ["User 1"],
+    "listeners": 6,
+    "speakers": 2
+  },
+  {
+    "id": "2",
+    "title": "Test room 2",
+    "avatars": [
+      "https://source.unsplash.com/random/100x100?3",
+      "https://source.unsplash.com/random/100x100?4"
+    ],
+    "members": ["User 1", "User 2"],
+    "listeners": 511,
+    "speakers": 2
+  },
+  {
+    "id": "3",
+    "title": "Test room 3",
+    "avatars": [
+      "https://source.unsplash.com/random/100x100?5",
+      "https://source.unsplash.com/random/100x100?6"
+    ],
+    "members": ["User 1", "User 2"],
+    "listeners": 5,
+    "speakers": 2
+  },
+  {
+    "id": "4",
+    "title": "Test room 4",
+    "avatars": [
+      "https://source.unsplash.com/random/100x100?7",
+      "https://source.unsplash.com/random/100x100?8"
+    ],
+    "members": ["User 1", "User 2"],
+    "listeners": 11,
+    "speakers": 2
+  }
+]

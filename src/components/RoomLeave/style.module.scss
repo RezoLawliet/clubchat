@@ -1,0 +1,27 @@
+.modal {
+  @apply w-screen h-screen inset-0 z-20 invisible opacity-0 flex items-center justify-center fixed transition-all duration-200;
+  &.opened {
+    @apply opacity-100 visible;
+  }
+  .overlay {
+    @apply w-screen h-screen z-10 absolute;
+    &::before {
+      content: '';
+      inset: 0;
+      z-index: 20;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      background-color: rgba($color: #000000, $alpha: 0.55);
+    }
+  }
+  .block {
+    @apply px-10 py-8 gap-4 z-20 flex flex-col rounded-2xl bg-white;
+    .head {
+      @apply text-lg font-extrabold uppercase;
+    }
+    .controls {
+      @apply gap-3 flex;
+    }
+  }
+}

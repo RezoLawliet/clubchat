@@ -1,0 +1,48 @@
+.notification {
+  @apply m-2 px-3.5 py-1 w-fit inline-flex self-center items-center justify-center bg-white shadow-md rounded-2xl;
+}
+.message {
+  @apply mx-4 my-1 gap-1 inline-flex transition-all duration-200;
+  .owner {
+    @apply font-bold;
+  }
+  .block {
+    @apply w-fit flex flex-col;
+  }
+  .container {
+    @apply px-5 py-3 w-fit flex flex-col justify-end rounded-md shadow-md bg-white;
+    p {
+      @apply text-base;
+    }
+    .details {
+      @apply flex self-start;
+      .timestamp {
+        @apply text-xs opacity-80;
+      }
+    }
+  }
+  .image {
+    @apply max-h-60 rounded-md bg-cover bg-center bg-no-repeat;
+  }
+}
+.received {
+  @apply mr-auto;
+  .owner {
+    @apply text-left;
+  }
+  .container {
+    @apply border;
+  }
+}
+.sended {
+  @apply ml-auto;
+  .owner {
+    @apply text-right;
+  }
+  .container {
+    @apply text-white bg-zinc-700;
+    .details {
+      @apply self-end;
+    }
+  }
+}

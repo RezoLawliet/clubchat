@@ -1,22 +1,20 @@
 import React from 'react'
-import Head from 'next/head'
 import { GetServerSideProps } from 'next'
 
 import nookies from 'nookies'
 
-import { Welcome } from '@/components/GetStarted/Welcome'
+import { Header } from '@/components/Header'
+import { User } from '@/components/User'
 
 import { getUserById } from '@/core/firebase'
 import { admin } from '@/core/firebase-admin'
 
-export default function HomePage() {
+export default function UserPage({ user }: any) {
   return (
-    <>
-      <Head>
-        <title>Clubhouse: Drop-in audio chat</title>
-      </Head>
-      <Welcome />
-    </>
+    <div className="container">
+      <Header {...user} />
+      <User {...user} />
+    </div>
   )
 }
 
@@ -27,20 +25,25 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const user = await getUserById(token.uid)
     if (user) {
       return {
-        redirect: {
-          destination: '/rooms',
-          permanent: false,
+        props: {
+          user,
         },
       }
     } else {
       return {
-        props: {},
+        redirect: {
+          destination: '/',
+          permanent: false,
+        },
       }
     }
   } catch (error) {
     console.error(error)
     return {
-      props: {},
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
     }
   }
 }
