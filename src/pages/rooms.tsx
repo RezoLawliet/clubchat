@@ -18,7 +18,7 @@ export default function RoomsPage({ rooms = [], user }: any) {
         <title>Clubhouse: Conversations</title>
       </Head>
       <Header {...user} />
-      <Rooms data={rooms} />
+      <Rooms user={user} data={rooms} />
     </div>
   )
 }

@@ -4,6 +4,7 @@ import cn from 'classnames'
 
 import { FiPlus } from 'react-icons/fi'
 import { GrFormNextLink } from 'react-icons/gr'
+import { GrFormPreviousLink } from 'react-icons/gr'
 import { MdOutlineExitToApp } from 'react-icons/md'
 import { AiOutlineLoading } from 'react-icons/ai'
 
@@ -11,6 +12,7 @@ import styles from './style.module.scss'
 
 const icons = {
   next: <GrFormNextLink className={styles.icon} />,
+  prev: <GrFormPreviousLink className={styles.icon} />,
   plus: <FiPlus className={styles.icon} />,
   exit: <MdOutlineExitToApp className={styles.icon} />,
   load: <AiOutlineLoading className={styles.load} />,

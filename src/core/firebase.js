@@ -14,13 +14,13 @@ import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'fire
 import { v4 as uuidv4 } from 'uuid'
 
 export const app = firebase.initializeApp({
-  apiKey: process.env.NEXT_PUBLIC_FB_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FB_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FB_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FB_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FB_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FB_APP_ID,
-  databaseURL: process.env.NEXT_PUBLIC_FB_DATABASE_URL,
+  apiKey: 'AIzaSyDtUdidae9oAVZUFL81a9ZA5PeF5Y_yUTw',
+  authDomain: 'clubhouse-c128a.firebaseapp.com',
+  projectId: 'clubhouse-c128a',
+  storageBucket: 'clubhouse-c128a.appspot.com',
+  messagingSenderId: '349378794758',
+  appId: '1:349378794758:web:d5877998f14da849ee3a87',
+  databaseURL: 'https://clubhouse-c128a-default-rtdb.europe-west1.firebasedatabase.app',
 })
 
 export const auth = getAuth(app)
@@ -190,30 +190,45 @@ export const getRoomById = async (id) => {
 export const createRoom = async (id, data) => {
   const roomRef = databaseRef(database, `rooms/${id}`)
   try {
-    set(roomRef, data)
+    await set(roomRef, data)
+    await joinRoom(id, data.owner, data.key)
   } catch (error) {
     console.error(error)
   }
 }
 
-export const joinRoom = async (roomId, userId) => {
+export const joinRoom = async (roomId, userId, key) => {
   const roomRef = databaseRef(database, `rooms/${roomId}`)
   try {
     const snapshot = await get(roomRef)
     const members = snapshot.val().members || []
+    const type = snapshot.val().type.trim()
     if (!members.includes(userId)) {
-      const membersWithUser = [...members, userId]
-      await set(roomRef, { ...snapshot.val(), members: membersWithUser })
-      const user = await getUserById(userId)
-      await sendChatMessage(
-        roomId,
-        userId,
-        `${user.fullname} just joined the channel`,
-        'notification'
-      )
+      if (type === 'private' && key && key === snapshot.val().key) {
+        const membersWithUser = [...members, userId]
+        await set(roomRef, { ...snapshot.val(), members: membersWithUser })
+        const user = await getUserById(userId)
+        await sendChatMessage(
+          roomId,
+          userId,
+          `${user.fullname} just joined the channel`,
+          'notification'
+        )
+      } else {
+        const membersWithUser = [...members, userId]
+        await set(roomRef, { ...snapshot.val(), members: membersWithUser })
+        const user = await getUserById(userId)
+        await sendChatMessage(
+          roomId,
+          userId,
+          `${user.fullname} just joined the channel`,
+          'notification'
+        )
+      }
     }
   } catch (error) {
     console.error(error)
+    return null
   }
 }
 

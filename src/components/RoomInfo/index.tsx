@@ -18,11 +18,12 @@ import { Button } from '@/components/Button'
 import styles from './style.module.scss'
 
 interface IModal {
+  room: object
   isOpened: boolean
   onClose: () => void
 }
 
-export const RoomFinder: React.FC<IModal> = ({ isOpened, onClose }) => {
+export const RoomInfo: React.FC<IModal> = ({ room, isOpened, onClose }) => {
   const router = useRouter()
   const [uuid, setUuid] = React.useState('')
   const [error, setError] = React.useState('')
@@ -70,26 +71,39 @@ export const RoomFinder: React.FC<IModal> = ({ isOpened, onClose }) => {
       <div className={styles.overlay} onClick={onClose}></div>
       <div className={styles.block}>
         <div className={styles.settings}>
-          <div className={styles.general}>
-            <span className={styles.option}>Find Room</span>
-            <input
-              className={cn(styles.input, { [styles.error]: error })}
-              type="text"
-              value={uuid}
-              onChange={(event) => setUuid(event.target.value)}
-              autoComplete="off"
-              placeholder="Enter room's UUID"
-            />
-            {error && (
-              <span className={styles.notification}>
-                <MdError className="w-5 h-5" />
-                {error}
-              </span>
-            )}
+          <div className={styles.definition}>
+            <span className={styles.option}>General</span>
+            <ul className={styles.info}>
+              <li className={styles.tag}>
+                <span>Topic</span>
+                <p>{room.topic}</p>
+              </li>
+              <li className={styles.tag}>
+                <span>Key</span>
+                <p>{room.key}</p>
+              </li>
+            </ul>
           </div>
-          <Button color="green" disabled={loader} onClick={create}>
-            Find room
-          </Button>
+          <div className={styles.definition}>
+            <span className={styles.option}>Additional</span>
+            <ul className={styles.info}>
+              <ul className="grid grid-cols-2">
+                <li className={styles.tag}>
+                  <span>Destination</span>
+                  <p>{room.type}</p>
+                </li>
+                <li className={styles.tag}>
+                  <span>Created at</span>
+                  <p>{room.timestamp}</p>
+                </li>
+              </ul>
+              <li className={styles.tag}>
+                <span>Ruler</span>
+                <p>{room.ruler}</p>
+              </li>
+            </ul>
+          </div>
+          <Button color="bordered">Delete</Button>
         </div>
         <CloseButton className={styles.close} onClick={onClose} />
       </div>

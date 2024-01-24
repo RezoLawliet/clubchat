@@ -12,7 +12,7 @@ body {
 body {
   font-family: 'Nunito', sans-serif;
   color: #151515;
-  background-color: #f8f8f8;
+  background-color: #f3f3f3;
 }
 
 #__next {
@@ -21,11 +21,12 @@ body {
 
 .container {
   margin: 0 auto;
-  padding: 0 10px;
-  max-width: 1240px;
+  padding: 0 40px;
+  max-width: 1300px;
   min-height: 100%;
   display: flex;
   flex-direction: column;
+  background-color: #f8f8f8;
 }
 .main {
   flex-grow: 1;

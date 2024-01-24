@@ -1,9 +1,12 @@
 import React from 'react'
 import { useRouter } from 'next/router'
 
-import { IoIosAttach } from 'react-icons/io'
+import cn from 'classnames'
 
+import { IoIosAttach } from 'react-icons/io'
+import { MdSettings } from 'react-icons/md'
 import { AiOutlineArrowUp } from 'react-icons/ai'
+import { IoMdMore } from 'react-icons/io'
 
 import { Button } from '@/components/Button'
 
@@ -21,6 +24,7 @@ import { useParams } from 'next/navigation'
 import { Avatar } from '../Avatar'
 import { Message } from '@/components/Message'
 import { RoomLeave } from '@/components/RoomLeave'
+import { RoomInfo } from '../RoomInfo'
 
 interface IUser {
   id: string
@@ -49,18 +53,14 @@ interface IRoom {
 
 export const Room: React.FC<IRoom> = ({ user, data }) => {
   const router = useRouter()
-  const [exit, setExit] = React.useState(false)
   const [room, setRoom] = React.useState(data)
-  const [prevTimestamp, setPrevTimestamp] = React.useState(
-    new Date(data.messages[0].timestamp).toLocaleDateString()
-  )
+  const [isPopup, setIsPopup] = React.useState(false)
+  const [isInfo, setIsInfo] = React.useState(false)
+  const [isExit, setIsExit] = React.useState(false)
 
   const chatRef = React.useRef<HTMLDivElement>(null)
   const fileRef = React.useRef<HTMLInputElement>(null)
   const enterRef = React.useRef<HTMLInputElement>(null)
-
-  console.log('room', room)
-  console.log(prevTimestamp)
 
   React.useEffect(() => {
     const roomRef = ref(database, `rooms/${room.id}`)
@@ -84,11 +84,6 @@ export const Room: React.FC<IRoom> = ({ user, data }) => {
   React.useEffect(() => {
     if (chatRef.current) {
       chatRef.current.scrollTop = chatRef.current.scrollHeight
-    }
-    if (room.messages.length > 0) {
-      setPrevTimestamp(
-        new Date(room.messages[room.messages.length - 1].timestamp).toLocaleDateString()
-      )
     }
   }, [room.messages])
 
@@ -118,9 +113,10 @@ export const Room: React.FC<IRoom> = ({ user, data }) => {
 
   return (
     <main className="main">
+      <RoomInfo room={room} isOpened={isInfo} onClose={() => setIsInfo(false)} />
       <RoomLeave
-        isOpened={exit}
-        onClose={() => setExit(false)}
+        isOpened={isExit}
+        onClose={() => setIsExit(false)}
         onLeave={async () => {
           await leaveRoom(room.id, user.id)
           router.push('/rooms')
@@ -129,26 +125,30 @@ export const Room: React.FC<IRoom> = ({ user, data }) => {
       <div className={styles.room}>
         <div className={styles.head}>
           <h1 className={styles.title}>{room.topic}</h1>
-          <div className={styles.control}>
-            <Button icon="exit" color="red" onClick={() => setExit(true)}>
-              Leave
-            </Button>
+          <div className={styles.controls}>
+            <button
+              className={cn(styles.settings, { [styles.opened]: isPopup })}
+              onClick={() => setIsPopup(!isPopup)}
+            >
+              <IoMdMore className={styles.settingsIcon} />
+              <ul className={cn(styles.popup, { [styles.opened]: isPopup })}>
+                <li className={styles.option}>
+                  <button onClick={() => setIsInfo(true)}>Information</button>
+                </li>
+                <li className={styles.option}>
+                  <button>Settings</button>
+                </li>
+                <li className={cn(styles.option, 'text-red-500')}>
+                  <button onClick={() => setIsExit(true)}>Leave</button>
+                </li>
+              </ul>
+            </button>
           </div>
         </div>
         <div className={styles.chat}>
           <div className={styles.messages} ref={chatRef}>
             {room.messages.map((message, index) => (
               <React.Fragment key={message.timestamp}>
-                {index === 0 ||
-                prevTimestamp !== new Date(message.timestamp).toLocaleDateString() ? (
-                  <span className={styles.separator}>
-                    {new Date(message.timestamp).toLocaleDateString([], {
-                      day: 'numeric',
-                      month: '2-digit',
-                      year: 'numeric',
-                    })}
-                  </span>
-                ) : null}
                 <Message key={message.timestamp} user={user} {...message} />
               </React.Fragment>
             ))}

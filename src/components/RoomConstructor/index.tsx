@@ -40,7 +40,7 @@ interface IModal {
   onClose: () => void
 }
 
-export const RoomConstructor: React.FC<IModal> = ({ isOpened, onClose }) => {
+export const RoomConstructor: React.FC<IModal> = ({ user, isOpened, onClose }) => {
   const router = useRouter()
   const [topic, setTopic] = React.useState('')
   const [type, setType] = React.useState(0)
@@ -61,10 +61,14 @@ export const RoomConstructor: React.FC<IModal> = ({ isOpened, onClose }) => {
     if (validate()) {
       setLoader(true)
       const id = String(uuidv4())
+      const timestamp = Date.now()
       try {
         await createRoom(id, {
           topic,
+          ruler: user.id,
           type: types[type].destination,
+          key: String(uuidv4()),
+          timestamp,
         })
         router.push(`/rooms/${id}`)
       } catch (error) {

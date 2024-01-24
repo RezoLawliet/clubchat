@@ -6,6 +6,33 @@
     .title {
       @apply text-3xl font-extrabold truncate;
     }
+    .controls {
+      @apply gap-5 inline-flex items-center;
+      .settings {
+        @apply p-1.5 flex items-center bg-white rounded-3xl relative
+        transition-colors duration-200;
+        .settingsIcon {
+          @apply w-auto h-6 text-zinc-700;
+        }
+        .popup {
+          @apply w-40 py-1.5 top-9 right-0 invisible opacity-0 scale-0 origin-top-right flex flex-col justify-center bg-white
+          z-10 rounded-md shadow-md absolute
+          transition-all duration-200;
+          .option {
+            @apply hover:bg-zinc-50 transition-colors duration-200;
+            button {
+              @apply w-full h-full px-3 py-1 text-left font-medium;
+            }
+          }
+        }
+        .opened {
+          @apply visible opacity-100 scale-100;
+        }
+      }
+      .opened {
+        @apply bg-zinc-100;
+      }
+    }
   }
   .members {
     @apply flex flex-col grow;
