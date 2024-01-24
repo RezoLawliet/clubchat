@@ -5,7 +5,7 @@ import { Button } from '@/components/Button'
 import styles from './style.module.scss'
 import { joinRoom } from '@/core/firebase'
 
-export const EnterRoomKey = ({ user, room, setIsPrivate }) => {
+export const EnterRoomKey = ({ user, room, setIsPrivate }: any) => {
   const [key, setKey] = React.useState('')
 
   const confirm = async () => {
