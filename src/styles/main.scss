@@ -12,7 +12,7 @@ body {
 body {
   font-family: 'Nunito', sans-serif;
   color: #151515;
-  background-color: #f3f3f3;
+  background-color: #f6f6f6;
 }
 
 #__next {
@@ -27,6 +27,8 @@ body {
   display: flex;
   flex-direction: column;
   background-color: #f8f8f8;
+  border-left: rgba($color: #151515, $alpha: 0.05) 1px solid;
+  border-right: rgba($color: #151515, $alpha: 0.05) 1px solid;
 }
 .main {
   flex-grow: 1;

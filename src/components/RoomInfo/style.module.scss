@@ -1,65 +1,47 @@
-.modal {
-  @apply w-screen h-screen inset-0 z-20 invisible opacity-0 flex items-center justify-center fixed transition-opacity duration-200;
-  &.opened {
-    @apply opacity-100 visible;
+.block {
+  @apply mx-0 my-auto z-20 translate-y-5 flex items-start justify-between;
+  .settings {
+    width: 30rem;
+    @apply px-10 py-8 gap-4 flex flex-col rounded-2xl bg-white;
+    .option {
+      @apply mb-3 text-xl font-bold;
+    }
+    .definition {
+      @apply inline-flex flex-col;
+      .info {
+        @apply gap-1.5 flex flex-col;
+        .tag {
+          @apply gap-0.5 flex flex-col;
+          span {
+            @apply text-base font-bold;
+          }
+        }
+      }
+    }
+    .details {
+      @apply inline-flex flex-col;
+      .types {
+        @apply mb-6 gap-4 inline-flex items-center justify-center;
+        .card {
+          @apply px-8 py-6 flex flex-col items-center border-2 border-zinc-200 bg-zinc-50 rounded-xl shadow-md outline-none
+          transition-colors duration-300;
+          .icon {
+            @apply w-10 mb-2;
+          }
+          span {
+            @apply text-base font-bold;
+          }
+        }
+        .selected {
+          @apply border-2 border-blue-500 bg-blue-50 shadow-lg;
+        }
+      }
+      .description {
+        @apply py-2 text-center text-base font-medium;
+      }
+    }
   }
-  .overlay {
-    @apply w-screen h-screen z-10 absolute;
-    &::before {
-      content: '';
-      inset: 0;
-      z-index: 20;
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      background-color: rgba($color: #000000, $alpha: 0.55);
-    }
-  }
-  .block {
-    @apply mx-0 my-auto gap-2 z-20 translate-y-5 flex items-start justify-between;
-    .settings {
-      width: 30rem;
-      @apply px-10 py-8 gap-4 flex flex-col rounded-2xl bg-white;
-      .option {
-        @apply mb-3 text-xl font-bold;
-      }
-      .definition {
-        @apply inline-flex flex-col;
-        .info {
-          @apply gap-1.5 flex flex-col;
-          .tag {
-            @apply gap-0.5 flex flex-col;
-            span {
-              @apply text-base font-bold;
-            }
-          }
-        }
-      }
-      .details {
-        @apply inline-flex flex-col;
-        .types {
-          @apply mb-6 gap-4 inline-flex items-center justify-center;
-          .card {
-            @apply px-8 py-6 flex flex-col items-center border-2 border-zinc-200 bg-zinc-50 rounded-xl shadow-md outline-none
-            transition-colors duration-300;
-            .icon {
-              @apply w-10 mb-2;
-            }
-            span {
-              @apply text-base font-bold;
-            }
-          }
-          .selected {
-            @apply border-2 border-blue-500 bg-blue-50 shadow-lg;
-          }
-        }
-        .description {
-          @apply py-2 text-center text-base font-medium;
-        }
-      }
-    }
-    .close {
-      @apply w-12 h-12 pt-2 cursor-pointer text-zinc-200 hover:text-white transition-colors duration-200;
-    }
+  .close {
+    @apply w-12 h-12 pt-2 cursor-pointer text-zinc-200 hover:text-white transition-colors duration-200;
   }
 }

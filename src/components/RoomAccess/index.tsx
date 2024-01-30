@@ -1,16 +1,28 @@
 import React from 'react'
+import { useRouter } from 'next/router'
 
 import { Button } from '@/components/Button'
 
 import styles from './style.module.scss'
-import { joinRoom } from '@/core/firebase'
 
-export const EnterRoomKey = ({ user, room, setIsPrivate }: any) => {
+import { database, getRoomById, joinRoom } from '@/core/firebase'
+import { onValue, ref } from 'firebase/database'
+
+export const RoomAccess = ({ user, content, setIsPrivate }: any) => {
+  const router = useRouter()
+  const [room, setRoom] = React.useState(content)
   const [key, setKey] = React.useState('')
 
   const confirm = async () => {
-    await joinRoom(room, user.id, key)
-    setIsPrivate(false)
+    try {
+      await joinRoom(room.id, user.id, key)
+      const content = await getRoomById(room.id)
+      if (content && content.members.some((member: any) => member.id === user.id)) {
+        setIsPrivate(false)
+      }
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return (
@@ -34,7 +46,7 @@ export const EnterRoomKey = ({ user, room, setIsPrivate }: any) => {
           placeholder="Enter room's key"
         />
         <div className={styles.navbar}>
-          <Button color="white" icon="prev">
+          <Button color="white" icon="prev" onClick={() => router.back()}>
             Back
           </Button>
           <Button onClick={confirm}>Enter</Button>

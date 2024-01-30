@@ -1,51 +1,67 @@
 import React from 'react'
 import { useRouter } from 'next/router'
 
-import { createRoom } from '@/core/firebase'
-
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-
 import cn from 'classnames'
 import { v4 as uuidv4 } from 'uuid'
+import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import ReactHtmlParser from 'react-html-parser'
 
 import { MdError } from 'react-icons/md'
-
+import { BiWorld, BiShieldQuarter } from 'react-icons/bi'
 import { IoClose as CloseButton } from 'react-icons/io5'
+
+import { Modal } from '@/components/Modal'
 import { Button } from '@/components/Button'
+import { RoomType, UserType } from '@/components/Room'
 
 import styles from './style.module.scss'
+
+import { createRoom } from '@/core/firebase'
 
 const types = [
   {
     destination: 'public',
-    description: `A <b>public</b> destination will makes your room becomes accessible to join
+    icon: <BiWorld />,
+    description: `A <b>public</b> destination will makes your room becomes open to join
   <b>everyone</b>`,
   },
   {
-    destination: 'social',
-    description: `A <b>social</b> destination will makes your room becomes accessible to join
-  <b>limited</b> and <b>trusted persons</b>`,
-  },
-  {
     destination: 'private',
-    description: `A <b>private</b> destination will makes your room becomes accessible to join by persons with a
+    icon: <BiShieldQuarter />,
+    description: `A <b>private</b> destination will makes your room becomes open to join by persons with a
   <b>key</b>`,
   },
 ]
 
-interface IModal {
+interface IRoomConstructor {
+  user: UserType
+  room?: RoomType
   isOpened: boolean
   onClose: () => void
 }
 
-export const RoomConstructor: React.FC<IModal> = ({ user, isOpened, onClose }) => {
+export const RoomConstructor: React.FC<IRoomConstructor> = ({ user, room, isOpened, onClose }) => {
   const router = useRouter()
-  const [topic, setTopic] = React.useState('')
-  const [type, setType] = React.useState(0)
+  const [topic, setTopic] = React.useState(room?.topic || '')
+  const [type, setType] = React.useState(
+    types.findIndex((type) => type.destination === room?.type) !== -1
+      ? types.findIndex((type) => type.destination === room?.type)
+      : 0
+  )
   const [error, setError] = React.useState('')
   const [loader, setLoader] = React.useState(false)
+
+  const generateSecretKey = () => {
+    const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+    const length = 32
+    let key = ''
+    for (var i = 0; i < length; i++) {
+      var rnum = Math.floor(Math.random() * chars.length)
+      key += chars.substring(rnum, rnum + 1)
+    }
+    return key
+  }
 
   const validate = () => {
     if (topic.trim().length < 4) {
@@ -54,6 +70,35 @@ export const RoomConstructor: React.FC<IModal> = ({ user, isOpened, onClose }) =
     } else {
       setError('')
       return true
+    }
+  }
+
+  const update = async () => {
+    if (validate()) {
+      setLoader(true)
+      const timestamp = Date.now()
+      try {
+        await createRoom(room?.id, {
+          topic,
+          type: types[type].destination,
+          ...(type === 1 && { key: String(generateSecretKey()) }),
+          timestamp,
+        })
+        onClose()
+      } catch (error) {
+        console.error(error)
+        toast.error('Error until the creation room', {
+          position: 'top-center',
+          autoClose: 7000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: 'colored',
+        })
+      }
+      setLoader(false)
     }
   }
 
@@ -67,7 +112,7 @@ export const RoomConstructor: React.FC<IModal> = ({ user, isOpened, onClose }) =
           topic,
           ruler: user.id,
           type: types[type].destination,
-          key: String(uuidv4()),
+          ...(type === 1 && { key: String(generateSecretKey()) }),
           timestamp,
         })
         router.push(`/rooms/${id}`)
@@ -83,15 +128,13 @@ export const RoomConstructor: React.FC<IModal> = ({ user, isOpened, onClose }) =
           progress: undefined,
           theme: 'colored',
         })
-        setLoader(false)
       }
+      setLoader(false)
     }
   }
 
   return (
-    <div className={cn(styles.modal, { [styles.opened]: isOpened })}>
-      <ToastContainer />
-      <div className={styles.overlay} onClick={onClose}></div>
+    <Modal isOpened={isOpened} onClose={onClose}>
       <div className={styles.block}>
         <div className={styles.settings}>
           <div className={styles.general}>
@@ -114,42 +157,33 @@ export const RoomConstructor: React.FC<IModal> = ({ user, isOpened, onClose }) =
           <div className={styles.details}>
             <span className={styles.option}>Destination</span>
             <div className={styles.types}>
-              <button
-                className={cn(styles.card, { [styles.selected]: type === 0 })}
-                onClick={() => setType(0)}
-              >
-                <img className={styles.icon} src="static/public.svg" alt="" />
-                <span>
-                  {types[0].destination.charAt(0).toUpperCase() + types[0].destination.slice(1)}
-                </span>
-              </button>
-              <button
-                className={cn(styles.card, { [styles.selected]: type === 1 })}
-                onClick={() => setType(1)}
-              >
-                <img className={styles.icon} src="static/private.svg" alt="" />
-                <span>
-                  {types[1].destination.charAt(0).toUpperCase() + types[1].destination.slice(1)}
-                </span>
-              </button>
-              <button
-                className={cn(styles.card, { [styles.selected]: type === 2 })}
-                onClick={() => setType(2)}
-              >
-                <img className={styles.icon} src="static/private.svg" alt="" />
-                <span>
-                  {types[2].destination.charAt(0).toUpperCase() + types[2].destination.slice(1)}
-                </span>
-              </button>
+              {types.map((item, index) => (
+                <button
+                  className={cn(styles.card, { [styles.selected]: type === index })}
+                  key={index}
+                  onClick={() => setType(index)}
+                >
+                  {React.cloneElement(item.icon, { className: styles.icon })}
+                  <span>
+                    {item.destination.charAt(0).toUpperCase() + item.destination.slice(1)}
+                  </span>
+                </button>
+              ))}
             </div>
             <p className={styles.description}>{ReactHtmlParser(types[type].description)}</p>
           </div>
-          <Button color="green" disabled={loader} onClick={create}>
-            Create room
-          </Button>
+          {room ? (
+            <Button disabled={loader} onClick={update}>
+              Save changes
+            </Button>
+          ) : (
+            <Button color="green" disabled={loader} onClick={create}>
+              Create room
+            </Button>
+          )}
         </div>
         <CloseButton className={styles.close} onClick={onClose} />
       </div>
-    </div>
+    </Modal>
   )
 }

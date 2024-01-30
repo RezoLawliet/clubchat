@@ -7,18 +7,17 @@ import nookies from 'nookies'
 import { Header } from '@/components/Header'
 import { Rooms } from '@/components/Rooms'
 
-import { onChildAdded, onChildChanged, onValue, ref } from 'firebase/database'
-import { database, getAllRooms, getUserById } from '@/core/firebase'
+import { getAllRooms, getUserById } from '@/core/firebase'
 import { admin } from '@/core/firebase-admin'
 
-export default function RoomsPage({ rooms = [], user }: any) {
+export default function RoomsPage({ authUser, content }: any) {
   return (
     <div className="container">
       <Head>
         <title>Clubhouse: Conversations</title>
       </Head>
-      <Header {...user} />
-      <Rooms user={user} data={rooms} />
+      <Header authUser={authUser} />
+      <Rooms authUser={authUser} content={content} />
     </div>
   )
 }
@@ -27,13 +26,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
     const cookies = nookies.get(context)
     const token = await admin.auth().verifyIdToken(cookies.token)
-    const user = await getUserById(token.uid)
-    if (user) {
-      const rooms = await getAllRooms()
+    const authUser = await getUserById(token.uid)
+    if (authUser) {
+      const content = await getAllRooms()
       return {
         props: {
-          user,
-          rooms,
+          authUser,
+          content,
         },
       }
     } else {

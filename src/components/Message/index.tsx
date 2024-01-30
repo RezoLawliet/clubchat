@@ -1,4 +1,5 @@
 import React from 'react'
+import Link from 'next/link'
 
 import cn from 'classnames'
 import Linkify from 'react-linkify'
@@ -6,7 +7,6 @@ import Linkify from 'react-linkify'
 import { Avatar } from '@/components/Avatar'
 
 import styles from './style.module.scss'
-import Link from 'next/link'
 
 interface IUser {
   id: string
@@ -36,14 +36,16 @@ export const Message: React.FC<IMessage> = ({ user, owner, message, type, timest
           })}
         >
           {owner.id !== user.id && (
-            <Avatar
-              className="m-1 w-12 h-12 self-end"
-              src={owner.imageUrl}
-              letters={owner.fullname}
-            />
+            <Link className="m-1 self-end" href={`/user/${owner.id}`}>
+              <Avatar className="w-12 h-12" src={owner.imageUrl} letters={owner.fullname} />
+            </Link>
           )}
           <div className={styles.block}>
-            {owner.id !== user.id && <span className={styles.owner}>{owner.fullname}</span>}
+            {owner.id !== user.id && (
+              <Link href={`/user/${owner.id}`}>
+                <span className={styles.owner}>{owner.fullname}</span>
+              </Link>
+            )}
             {type === 'imageUrl' ? (
               <img className={styles.image} src={message} alt="image" />
             ) : (

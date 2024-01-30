@@ -72,7 +72,6 @@ export default function AuthPage() {
         value={{ onNextStep, onPrevStep, user, setUser, setUserProps, verifierKey, setVerifierKey }}
       >
         <Step />
-        <div id="recaptcha-container" />
       </AuthCloud.Provider>
     </>
   )

@@ -8,6 +8,7 @@ import {
   query,
   orderByKey,
   remove,
+  update,
 } from 'firebase/database'
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage'
 
@@ -114,12 +115,86 @@ export const createUser = async (id, data) => {
 
   try {
     const imageUrl = data.imageUrl
-    if (imageUrl) {
+    if (imageUrl && typeof imageUrl !== 'string') {
       await uploadBytes(imageRef, imageUrl)
       const url = await getDownloadURL(imageRef)
       data.imageUrl = url
     }
-    set(userRef, data)
+    const snapshot = await get(userRef)
+    if (snapshot.exists()) {
+      update(userRef, data)
+    } else {
+      set(userRef, data)
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+export const onSubscribe = async (authUser, contentUser) => {
+  try {
+    const authUserRef = databaseRef(database, `users/${authUser.id}`)
+    const contentUserRef = databaseRef(database, `users/${contentUser.id}`)
+
+    const authUserSnapshot = await get(authUserRef)
+    const contentUserSnapshot = await get(contentUserRef)
+
+    if (authUserSnapshot.exists() && contentUserSnapshot.exists()) {
+      const authUserSubscribings = authUserSnapshot.val().subscribings || []
+      const contentUserSubscriberss = contentUserSnapshot.val().subscribers || []
+
+      if (
+        (!authUserSnapshot.val().subscribings ||
+          !authUserSnapshot.val().subscribings.includes(contentUser.id)) &&
+        (!contentUserSnapshot.val().subscribers ||
+          !contentUserSnapshot.val().subscribers.includes(authUser.id))
+      ) {
+        await update(authUserRef, {
+          subscribings: [...authUserSubscribings, contentUser.id],
+        })
+        await update(contentUserRef, {
+          subscribers: [...contentUserSubscriberss, authUser.id],
+        })
+      }
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+export const onUnsubscribe = async (authUser, contentUser) => {
+  try {
+    const authUserRef = databaseRef(database, `users/${authUser.id}`)
+    const contentUserRef = databaseRef(database, `users/${contentUser.id}`)
+
+    const authUserSnapshot = await get(authUserRef)
+    const contentUserSnapshot = await get(contentUserRef)
+
+    if (authUserSnapshot.exists() && contentUserSnapshot.exists()) {
+      const authUserSubscribings = authUserSnapshot.val().subscribings || []
+      const contentUserSubscribers = contentUserSnapshot.val().subscribers || []
+
+      if (
+        (authUserSnapshot.val().subscribings &&
+          authUserSnapshot.val().subscribings.includes(contentUser.id)) ||
+        (contentUserSnapshot.val().subscribers &&
+          contentUserSnapshot.val().subscribers.includes(authUser.id))
+      ) {
+        const filteredAuthUserSubscribings = authUserSubscribings.filter(
+          (user) => user !== contentUser.id
+        )
+        const filteredContentUserSubscribers = contentUserSubscribers.filter(
+          (user) => user !== authUser.id
+        )
+
+        await update(authUserRef, {
+          subscribings: filteredAuthUserSubscribings,
+        })
+        await update(contentUserRef, {
+          subscribers: filteredContentUserSubscribers,
+        })
+      }
+    }
   } catch (error) {
     console.error(error)
   }
@@ -175,13 +250,15 @@ export const getRoomById = async (id) => {
         const { owner, ...rest } = message
         return { owner: messageWithSenders, ...rest }
       })
+      const ruler = await getUserById(room.ruler)
       return {
         id,
         ...room,
         members: membersWithData,
         messages: messagesWithData,
+        ruler,
       }
-    } else return null
+    } else return false
   } catch (error) {
     console.error(error)
   }
@@ -190,8 +267,13 @@ export const getRoomById = async (id) => {
 export const createRoom = async (id, data) => {
   const roomRef = databaseRef(database, `rooms/${id}`)
   try {
-    await set(roomRef, data)
-    await joinRoom(id, data.owner, data.key)
+    const snapshot = await get(roomRef)
+    if (snapshot.exists()) {
+      await update(roomRef, data)
+    } else {
+      await set(roomRef, data)
+      await joinRoom(id, data.owner, data.key)
+    }
   } catch (error) {
     console.error(error)
   }
@@ -203,8 +285,10 @@ export const joinRoom = async (roomId, userId, key) => {
     const snapshot = await get(roomRef)
     const members = snapshot.val().members || []
     const type = snapshot.val().type.trim()
+    console.log(type)
     if (!members.includes(userId)) {
-      if (type === 'private' && key && key === snapshot.val().key) {
+      if (type === 'private' && key === snapshot.val().key) {
+        console.log(true)
         const membersWithUser = [...members, userId]
         await set(roomRef, { ...snapshot.val(), members: membersWithUser })
         const user = await getUserById(userId)

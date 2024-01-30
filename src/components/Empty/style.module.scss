@@ -1,0 +1,15 @@
+.block {
+  @apply mx-auto px-16 py-12 max-w-sm inline-flex flex-col justify-center items-center;
+  .head {
+    @apply mb-1 text-4xl;
+  }
+  .container {
+    @apply text-center;
+    .title {
+      @apply mb-2 text-xl font-bold;
+    }
+    .description {
+      @apply text-base font-medium;
+    }
+  }
+}

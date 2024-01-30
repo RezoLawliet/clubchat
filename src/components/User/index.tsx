@@ -1,29 +1,59 @@
 import React from 'react'
 import Head from 'next/head'
-
-import { Avatar } from '@/components/Avatar'
-import { Breadcrumbs } from '@/components/Breadcrumbs'
-
-import styles from './style.module.scss'
-import Link from 'next/link'
-import { IoChevronBack } from 'react-icons/io5'
 import { useRouter } from 'next/router'
 
-interface IUser {
+import { IoChevronBack } from 'react-icons/io5'
+
+import { Avatar } from '@/components/Avatar'
+import { UserEditor } from '@/components/UserEditor'
+
+import { ref, onValue } from 'firebase/database'
+import { database, getUserById, onSubscribe, onUnsubscribe } from '@/core/firebase'
+
+import styles from './style.module.scss'
+
+type UserType = {
+  id: string
   fullname: string
   username: string
   imageUrl?: string
+  description?: string
+  subscribers?: string[]
+  subscribings?: string[]
 }
 
-export const User: React.FC<IUser> = ({ fullname, username, imageUrl }) => {
+interface IUser {
+  authUser: UserType
+  contentUser: UserType
+}
+
+export const User: React.FC<IUser> = ({ authUser, contentUser }) => {
   const router = useRouter()
+  const [user, setUser] = React.useState(contentUser)
+  const [isEditor, setIsEditor] = React.useState(false)
+
+  React.useEffect(() => {
+    const userRef = ref(database, `users/${user.id}`)
+
+    const subscribe = onValue(userRef, async () => {
+      const response = await getUserById(user.id)
+      setUser(response)
+    })
+
+    return () => {
+      subscribe()
+    }
+  }, [])
 
   return (
     <>
       <Head>
-        <title>@{username}</title>
+        <title>@{user.username}</title>
       </Head>
       <main className="main">
+        {isEditor && (
+          <UserEditor isOpened={isEditor} onClose={() => setIsEditor(false)} user={user} />
+        )}
         <button className={styles.link} onClick={() => router.back()}>
           <IoChevronBack />
           Back
@@ -31,35 +61,43 @@ export const User: React.FC<IUser> = ({ fullname, username, imageUrl }) => {
         <div className={styles.user}>
           <div className={styles.head}>
             <div className={styles.hero}>
-              <Avatar className="w-20 h-20" src={imageUrl} letters={fullname} />
+              <Avatar className="w-20 h-20" src={user.imageUrl} letters={user.fullname} />
               <div className={styles.username}>
-                <h2>{fullname}</h2>
-                <span>@{username}</span>
+                <h2>{user.fullname}</h2>
+                <span>@{user.username}</span>
               </div>
-              <div className={styles.control}>
-                <button className={styles.subscribe}>Follow</button>
-                <button>
-                  <img width="20px" height="20px" src="/static/more.svg" alt="" />
-                </button>
+              <div className={styles.controls}>
+                {authUser.id === user.id ? (
+                  <button className={styles.subscribe} onClick={() => setIsEditor(true)}>
+                    Preferences
+                  </button>
+                ) : !user.subscribers?.includes(authUser.id) ? (
+                  <button className={styles.subscribe} onClick={() => onSubscribe(authUser, user)}>
+                    Subscribe
+                  </button>
+                ) : (
+                  <button
+                    className={styles.unsubscribe}
+                    onClick={() => onUnsubscribe(authUser, user)}
+                  >
+                    Unsubscribe
+                  </button>
+                )}
               </div>
             </div>
             <div className={styles.statistic}>
               <div className={styles.counter}>
-                <h2>2</h2>
-                <span>followers</span>
+                <h2>{user.subscribers?.length || 0}</h2>
+                <span>subscribers</span>
               </div>
               <div className={styles.counter}>
-                <h2>0</h2>
-                <span>following</span>
+                <h2>{user.subscribings?.length || 0}</h2>
+                <span>subscribings</span>
               </div>
             </div>
           </div>
-          <div className={styles.description}>
-            <p>
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit. Natus rerum, mollitia, omnis
-              dolor quidem recusandae architecto voluptatibus quaerat molestiae porro repudiandae
-              incidunt quis labore consequuntur est accusantium quia culpa facilis rem reiciendis!
-            </p>
+          <div className={styles.about}>
+            <p>{user.description ? user.description : 'There is no user information available'}</p>
           </div>
         </div>
       </main>

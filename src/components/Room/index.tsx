@@ -3,59 +3,58 @@ import { useRouter } from 'next/router'
 
 import cn from 'classnames'
 
-import { IoIosAttach } from 'react-icons/io'
-import { MdSettings } from 'react-icons/md'
-import { AiOutlineArrowUp } from 'react-icons/ai'
 import { IoMdMore } from 'react-icons/io'
+import { AiOutlineArrowUp } from 'react-icons/ai'
+import { MdOutlineAttachFile } from 'react-icons/md'
 
-import { Button } from '@/components/Button'
+import { Empty } from '@/components/Empty'
+import { Message } from '@/components/Message'
+import { RoomInfo } from '@/components/RoomInfo'
+import { RoomLeave } from '@/components/RoomLeave'
+import { RoomConstructor } from '@/components/RoomConstructor'
 
 import styles from './style.module.scss'
-import { get, onValue, orderByKey, query, ref, serverTimestamp, set } from 'firebase/database'
-import {
-  database,
-  getRoomById,
-  getSendersByRoom,
-  leaveRoom,
-  sendChatMessage,
-  setImageFile,
-} from '@/core/firebase'
-import { useParams } from 'next/navigation'
-import { Avatar } from '../Avatar'
-import { Message } from '@/components/Message'
-import { RoomLeave } from '@/components/RoomLeave'
-import { RoomInfo } from '../RoomInfo'
 
-interface IUser {
+import { ref, onValue } from 'firebase/database'
+import { database, getRoomById, leaveRoom, sendChatMessage, setImageFile } from '@/core/firebase'
+import { createMessage } from '@/core/controllers/RoomController'
+
+export type UserType = {
   id: string
   fullname: string
   username: string
   imageUrl?: string
 }
 
-interface IMessage {
-  owner: IUser
+export type RoomType = {
+  id: string
+  topic: string
+  type: string
+  key?: string
+  members: UserType[]
+  messages: MessageType[]
+  ruler: UserType
+  timestamp: number
+}
+
+type MessageType = {
+  owner: UserType
   message: string
   type?: string
   timestamp: number
 }
 
 interface IRoom {
-  user: IUser
-  data: {
-    id: string
-    topic: string
-    type: string
-    members: IUser[]
-    messages: IMessage[]
-  }
+  authUser: UserType
+  content: RoomType
 }
 
-export const Room: React.FC<IRoom> = ({ user, data }) => {
+export const Room: React.FC<IRoom> = ({ authUser, content }) => {
   const router = useRouter()
-  const [room, setRoom] = React.useState(data)
+  const [room, setRoom] = React.useState(content)
   const [isPopup, setIsPopup] = React.useState(false)
   const [isInfo, setIsInfo] = React.useState(false)
+  const [isEdit, setIsEdit] = React.useState(false)
   const [isExit, setIsExit] = React.useState(false)
 
   const chatRef = React.useRef<HTMLDivElement>(null)
@@ -70,8 +69,8 @@ export const Room: React.FC<IRoom> = ({ user, data }) => {
           router.replace('/rooms')
           return
         }
-        const newRooms = await getRoomById(room.id)
-        setRoom(newRooms)
+        const response = await getRoomById(room.id)
+        setRoom(response)
       } catch (error) {
         console.error(error)
       }
@@ -92,7 +91,9 @@ export const Room: React.FC<IRoom> = ({ user, data }) => {
       const file = fileRef.current?.files && fileRef.current.files[0]
       if (file) {
         const url = await setImageFile(room.id, file)
-        await sendChatMessage(room.id, user.id, url, 'imageUrl')
+        if (url) {
+          await createMessage(room.id, authUser.id, url, 'imageUrl')
+        }
       }
     } catch (error) {
       console.error(error)
@@ -103,7 +104,7 @@ export const Room: React.FC<IRoom> = ({ user, data }) => {
     try {
       const value = enterRef.current?.value
       if (value) {
-        await sendChatMessage(room.id, user.id, value)
+        await sendChatMessage(room.id, authUser.id, value)
         enterRef.current.value = ''
       }
     } catch (error) {
@@ -113,15 +114,27 @@ export const Room: React.FC<IRoom> = ({ user, data }) => {
 
   return (
     <main className="main">
-      <RoomInfo room={room} isOpened={isInfo} onClose={() => setIsInfo(false)} />
-      <RoomLeave
-        isOpened={isExit}
-        onClose={() => setIsExit(false)}
-        onLeave={async () => {
-          await leaveRoom(room.id, user.id)
-          router.push('/rooms')
-        }}
-      />
+      {isInfo && (
+        <RoomInfo user={authUser} room={room} isOpened={isInfo} onClose={() => setIsInfo(false)} />
+      )}
+      {isEdit && (
+        <RoomConstructor
+          user={authUser}
+          room={room}
+          isOpened={isEdit}
+          onClose={() => setIsEdit(false)}
+        />
+      )}
+      {isExit && (
+        <RoomLeave
+          isOpened={isExit}
+          onClose={() => setIsExit(false)}
+          onLeave={async () => {
+            await leaveRoom(room.id, authUser.id)
+            router.push('/rooms')
+          }}
+        />
+      )}
       <div className={styles.room}>
         <div className={styles.head}>
           <h1 className={styles.title}>{room.topic}</h1>
@@ -132,14 +145,16 @@ export const Room: React.FC<IRoom> = ({ user, data }) => {
             >
               <IoMdMore className={styles.settingsIcon} />
               <ul className={cn(styles.popup, { [styles.opened]: isPopup })}>
-                <li className={styles.option}>
-                  <button onClick={() => setIsInfo(true)}>Information</button>
+                <li className={styles.option} onClick={() => setIsInfo(true)}>
+                  Information
                 </li>
-                <li className={styles.option}>
-                  <button>Settings</button>
-                </li>
-                <li className={cn(styles.option, 'text-red-500')}>
-                  <button onClick={() => setIsExit(true)}>Leave</button>
+                {authUser.id === room.ruler.id && (
+                  <li className={styles.option} onClick={() => setIsEdit(true)}>
+                    Settings
+                  </li>
+                )}
+                <li className={cn(styles.option, 'text-red-500')} onClick={() => setIsExit(true)}>
+                  Leave
                 </li>
               </ul>
             </button>
@@ -147,11 +162,19 @@ export const Room: React.FC<IRoom> = ({ user, data }) => {
         </div>
         <div className={styles.chat}>
           <div className={styles.messages} ref={chatRef}>
-            {room.messages.map((message, index) => (
+            {room.messages.map((message) => (
               <React.Fragment key={message.timestamp}>
-                <Message key={message.timestamp} user={user} {...message} />
+                <Message key={message.timestamp} user={authUser} {...message} />
               </React.Fragment>
             ))}
+            {room.messages.every((message) => message.type === 'notification') && (
+              <Empty
+                className="mt-32"
+                emoji="👏"
+                title="No messages here"
+                description="Be first to send a new message to the chat."
+              />
+            )}
           </div>
         </div>
         <div className={styles.form}>
@@ -160,7 +183,7 @@ export const Room: React.FC<IRoom> = ({ user, data }) => {
             ref={enterRef}
             onKeyDown={(event) => event.key === 'Enter' && onSend()}
             type="text"
-            placeholder="Enter message"
+            placeholder="Enter message..."
           />
           <input
             id="file"
@@ -170,12 +193,12 @@ export const Room: React.FC<IRoom> = ({ user, data }) => {
             accept=".jpg, .jpeg, .png, .svg"
             hidden
           />
-          <label className={styles.attach} htmlFor="file">
-            <IoIosAttach className="w-5 h-full" />
-          </label>
           <button className={styles.submit} type="button" onClick={onSend}>
             <AiOutlineArrowUp className="w-5 h-full" />
           </button>
+          <label className={styles.attach} htmlFor="file">
+            <MdOutlineAttachFile className="w-5 h-full" />
+          </label>
         </div>
       </div>
     </main>

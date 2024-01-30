@@ -10,10 +10,34 @@
     }
   }
   .user {
-    @apply gap-3 flex items-center;
-    span {
-      @apply px-3 py-2 text-base font-extrabold bg-white rounded-xl shadow-md hover:bg-zinc-50 transition-colors duration-200;
+    @apply gap-2 flex items-center;
+    .link {
+      @apply gap-2 flex items-center;
+      span {
+        @apply pt-0.5 text-base font-extrabold;
+      }
     }
+  }
+  .settings {
+    @apply p-1.5 flex items-center bg-zinc-50 rounded-3xl relative
+    transition-colors duration-200;
+    .settingsIcon {
+      @apply w-auto h-6 text-zinc-700;
+    }
+    .popup {
+      @apply w-36 py-1.5 top-10 right-0 invisible opacity-0 scale-0 origin-top-right flex flex-col justify-center bg-white
+      z-10 rounded-md shadow-md absolute
+      transition-all duration-200;
+      .option {
+        @apply w-full h-full px-3 py-1 text-left font-medium hover:bg-zinc-50 transition-colors duration-200;
+      }
+    }
+    .opened {
+      @apply visible opacity-100 scale-100;
+    }
+  }
+  .opened {
+    @apply bg-zinc-100;
   }
   .logotype:hover img {
     animation: wave 0.75s;

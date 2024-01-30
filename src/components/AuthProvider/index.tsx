@@ -1,5 +1,4 @@
 import React from 'react'
-import { useRouter } from 'next/router'
 
 import nookies from 'nookies'
 
@@ -9,11 +8,12 @@ const AuthStorage = React.createContext<{ user: any }>({
   user: null,
 })
 
-export const AuthProvider = ({ children }: any) => {
-  const router = useRouter()
-  const [user, setUser] = React.useState<any>(null)
+interface IAuthProvider {
+  children: React.ReactNode
+}
 
-  console.log('AuthProvider:', user)
+export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
+  const [user, setUser] = React.useState<any>(null)
 
   React.useEffect(() => {
     return auth.onIdTokenChanged(async (user) => {

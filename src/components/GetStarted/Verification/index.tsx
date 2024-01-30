@@ -49,6 +49,7 @@ export const Verification: React.FC = () => {
   return (
     <div className={styles.container}>
       <ToastContainer />
+      <div id="recaptcha-container" />
       <div className={styles.step}>
         <div className={styles.head}>
           <img className={styles.emoji} src="static/phone.svg" alt="Emoji" />

@@ -1,7 +1,7 @@
 .rooms {
-  @apply mb-12 pt-10;
+  @apply mb-12 pt-10 flex flex-col grow;
   .head {
-    @apply mb-14 px-4 flex items-center justify-between;
+    @apply mb-10 px-4 flex items-center justify-between;
     .title {
       @apply text-3xl font-extrabold;
     }

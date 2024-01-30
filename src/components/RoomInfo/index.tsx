@@ -1,32 +1,29 @@
 import React from 'react'
 import { useRouter } from 'next/router'
 
-import { createRoom, getRoomById } from '@/core/firebase'
+import { getRoomById } from '@/core/firebase'
 
-import { ToastContainer, toast } from 'react-toastify'
+import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
-import cn from 'classnames'
-import { v4 as uuidv4 } from 'uuid'
-import ReactHtmlParser from 'react-html-parser'
-
-import { MdError } from 'react-icons/md'
-
 import { IoClose as CloseButton } from 'react-icons/io5'
+
+import { Modal } from '@/components/Modal'
 import { Button } from '@/components/Button'
+import { UserType, RoomType } from '@/components/Room'
 
 import styles from './style.module.scss'
 
-interface IModal {
-  room: object
+interface IRoomInfo {
+  user: UserType
+  room: RoomType
   isOpened: boolean
   onClose: () => void
 }
 
-export const RoomInfo: React.FC<IModal> = ({ room, isOpened, onClose }) => {
+export const RoomInfo: React.FC<IRoomInfo> = ({ user, room, isOpened, onClose }) => {
   const router = useRouter()
   const [uuid, setUuid] = React.useState('')
-  const [error, setError] = React.useState('')
   const [loader, setLoader] = React.useState(false)
 
   const create = async () => {
@@ -36,10 +33,9 @@ export const RoomInfo: React.FC<IModal> = ({ room, isOpened, onClose }) => {
       if (room) {
         router.push(`/rooms/${uuid}`)
       } else {
-        setError('Error input')
         toast.error('Error until the find room', {
           position: 'top-center',
-          autoClose: 7000,
+          autoClose: 3000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -47,13 +43,12 @@ export const RoomInfo: React.FC<IModal> = ({ room, isOpened, onClose }) => {
           progress: undefined,
           theme: 'colored',
         })
-        setLoader(false)
       }
     } catch (error) {
       console.error(error)
-      toast.error('Error until the find room', {
+      toast.error('Error until the deleting room', {
         position: 'top-center',
-        autoClose: 7000,
+        autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -61,14 +56,12 @@ export const RoomInfo: React.FC<IModal> = ({ room, isOpened, onClose }) => {
         progress: undefined,
         theme: 'colored',
       })
-      setLoader(false)
     }
+    setLoader(false)
   }
 
   return (
-    <div className={cn(styles.modal, { [styles.opened]: isOpened })}>
-      <ToastContainer />
-      <div className={styles.overlay} onClick={onClose}></div>
+    <Modal isOpened={isOpened} onClose={onClose}>
       <div className={styles.block}>
         <div className={styles.settings}>
           <div className={styles.definition}>
@@ -79,34 +72,46 @@ export const RoomInfo: React.FC<IModal> = ({ room, isOpened, onClose }) => {
                 <p>{room.topic}</p>
               </li>
               <li className={styles.tag}>
-                <span>Key</span>
-                <p>{room.key}</p>
+                <span>Ruler</span>
+                <p>@{room.ruler.username}</p>
               </li>
+              {room.key && (
+                <li className={styles.tag}>
+                  <span>Secret Key*</span>
+                  <p>{room.key}</p>
+                </li>
+              )}
             </ul>
           </div>
           <div className={styles.definition}>
-            <span className={styles.option}>Additional</span>
+            <span className={styles.option}>Secondary</span>
             <ul className={styles.info}>
               <ul className="grid grid-cols-2">
                 <li className={styles.tag}>
                   <span>Destination</span>
-                  <p>{room.type}</p>
+                  <p>{room.type.charAt(0).toUpperCase() + room.type.slice(1)}</p>
                 </li>
                 <li className={styles.tag}>
-                  <span>Created at</span>
-                  <p>{room.timestamp}</p>
+                  <span>Last changes</span>
+                  <p>
+                    {new Date(room.timestamp).toLocaleTimeString([], {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    }) +
+                      ' ' +
+                      'UTC'}
+                  </p>
                 </li>
               </ul>
-              <li className={styles.tag}>
-                <span>Ruler</span>
-                <p>{room.ruler}</p>
-              </li>
             </ul>
           </div>
-          <Button color="bordered">Delete</Button>
+          {user.id === room.ruler.id && <Button color="bordered">Delete</Button>}
         </div>
         <CloseButton className={styles.close} onClick={onClose} />
       </div>
-    </div>
+    </Modal>
   )
 }
