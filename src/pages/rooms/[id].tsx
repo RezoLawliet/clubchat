@@ -8,7 +8,9 @@ import { Header } from '@/components/Header'
 import { Room } from '@/components/Room'
 import { RoomAccess } from '@/components/RoomAccess'
 
-import { getRoomById, getUserById, joinRoom } from '@/core/firebase'
+import { getUserById } from '@/core/controllers/UserController'
+import { getRoomById, joinRoom } from '@/core/controllers/RoomController'
+
 import { admin } from '@/core/firebase-admin'
 
 export default function RoomPage({ authUser, room }: any) {

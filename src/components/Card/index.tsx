@@ -1,23 +1,19 @@
 import React from 'react'
+import Link from 'next/link'
 
 import { FaUserFriends } from 'react-icons/fa'
 
 import { Avatar } from '@/components/Avatar'
 
 import styles from './style.module.scss'
-import Link from 'next/link'
 
-interface IUser {
-  fullname: string
-  username: string
-  imageUrl?: string
-}
+import UserType from '@/core/models/UserModel'
 
 interface ICard {
   path: string
   topic: string
   type: string
-  members: IUser[]
+  members: UserType[]
 }
 
 export const Card: React.FC<ICard> = ({ path, topic, type, members = [] }) => {

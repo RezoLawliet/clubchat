@@ -5,8 +5,7 @@ import { Button } from '@/components/Button'
 
 import styles from './style.module.scss'
 
-import { database, getRoomById, joinRoom } from '@/core/firebase'
-import { onValue, ref } from 'firebase/database'
+import { getRoomById, joinRoom } from '@/core/controllers/RoomController'
 
 export const RoomAccess = ({ user, content, setIsPrivate }: any) => {
   const router = useRouter()

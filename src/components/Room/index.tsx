@@ -10,39 +10,17 @@ import { MdOutlineAttachFile } from 'react-icons/md'
 import { Empty } from '@/components/Empty'
 import { Message } from '@/components/Message'
 import { RoomInfo } from '@/components/RoomInfo'
-import { RoomLeave } from '@/components/RoomLeave'
+import { AreYouSure } from '@/components/AreYouSure'
 import { RoomConstructor } from '@/components/RoomConstructor'
 
 import styles from './style.module.scss'
 
+import UserType from '@/core/models/UserModel'
+import RoomType from '@/core/models/RoomModel'
+
 import { ref, onValue } from 'firebase/database'
-import { database, getRoomById, leaveRoom, sendChatMessage, setImageFile } from '@/core/firebase'
-import { createMessage } from '@/core/controllers/RoomController'
-
-export type UserType = {
-  id: string
-  fullname: string
-  username: string
-  imageUrl?: string
-}
-
-export type RoomType = {
-  id: string
-  topic: string
-  type: string
-  key?: string
-  members: UserType[]
-  messages: MessageType[]
-  ruler: UserType
-  timestamp: number
-}
-
-type MessageType = {
-  owner: UserType
-  message: string
-  type?: string
-  timestamp: number
-}
+import { database, getRoomById, setImageFile } from '@/core/firebase'
+import { createMessage, leaveRoom } from '@/core/controllers/RoomController'
 
 interface IRoom {
   authUser: UserType
@@ -89,7 +67,7 @@ export const Room: React.FC<IRoom> = ({ authUser, content }) => {
   const onUpload = async () => {
     try {
       const file = fileRef.current?.files && fileRef.current.files[0]
-      if (file) {
+      if (file && file.type.startsWith('image/')) {
         const url = await setImageFile(room.id, file)
         if (url) {
           await createMessage(room.id, authUser.id, url, 'imageUrl')
@@ -104,7 +82,7 @@ export const Room: React.FC<IRoom> = ({ authUser, content }) => {
     try {
       const value = enterRef.current?.value
       if (value) {
-        await sendChatMessage(room.id, authUser.id, value)
+        await createMessage(room.id, authUser.id, value, null)
         enterRef.current.value = ''
       }
     } catch (error) {
@@ -126,10 +104,12 @@ export const Room: React.FC<IRoom> = ({ authUser, content }) => {
         />
       )}
       {isExit && (
-        <RoomLeave
+        <AreYouSure
+          topic="Do you really wanna leave?"
+          action="Leave"
           isOpened={isExit}
           onClose={() => setIsExit(false)}
-          onLeave={async () => {
+          onSubmit={async () => {
             await leaveRoom(room.id, authUser.id)
             router.push('/rooms')
           }}
@@ -162,12 +142,13 @@ export const Room: React.FC<IRoom> = ({ authUser, content }) => {
         </div>
         <div className={styles.chat}>
           <div className={styles.messages} ref={chatRef}>
-            {room.messages.map((message) => (
-              <React.Fragment key={message.timestamp}>
-                <Message key={message.timestamp} user={authUser} {...message} />
-              </React.Fragment>
-            ))}
-            {room.messages.every((message) => message.type === 'notification') && (
+            {room.messages &&
+              room.messages.map((message) => (
+                <React.Fragment key={message.timestamp}>
+                  <Message key={message.timestamp} user={authUser} message={message} />
+                </React.Fragment>
+              ))}
+            {room.messages && room.messages.every((message) => message.type === 'notification') && (
               <Empty
                 className="mt-32"
                 emoji="👏"

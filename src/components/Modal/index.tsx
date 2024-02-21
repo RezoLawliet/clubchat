@@ -2,8 +2,6 @@ import React from 'react'
 
 import cn from 'classnames'
 
-import { IoClose } from 'react-icons/io5'
-
 import styles from './style.module.scss'
 
 interface IModal {

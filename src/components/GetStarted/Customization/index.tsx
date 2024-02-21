@@ -26,17 +26,6 @@ export const Customization: React.FC = () => {
     }
   }, [])
 
-  // const uploadAvatar = async (file: File) => {
-  //   const formData = new FormData()
-  //   formData.append('photo', file)
-
-  //   const { data } = await axios.post('http://localhost:5000/upload', formData, {
-  //     headers: { 'Content-Type': 'multipart/form-data' },
-  //   })
-
-  //   return data
-  // }
-
   const customize: any = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file && file.type.startsWith('image/')) {

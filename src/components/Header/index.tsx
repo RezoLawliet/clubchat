@@ -9,16 +9,14 @@ import { Avatar } from '@/components/Avatar'
 
 import styles from './style.module.scss'
 
+import UserType from '@/core/models/UserModel'
+
 import { ref, onValue } from 'firebase/database'
-import { database, getUserById } from '@/core/firebase'
+import { auth, database, getUserById } from '@/core/firebase'
+import { signOut } from 'firebase/auth'
 
 interface IHeader {
-  authUser: {
-    id: string
-    fullname: string
-    username: string
-    imageUrl?: string
-  }
+  authUser: UserType
 }
 
 export const Header: React.FC<IHeader> = ({ authUser }) => {
@@ -38,6 +36,11 @@ export const Header: React.FC<IHeader> = ({ authUser }) => {
       subscribe()
     }
   }, [])
+
+  const onLogout = async () => {
+    await signOut(auth)
+    router.push('/')
+  }
 
   return (
     <header className={styles.header}>
@@ -59,7 +62,9 @@ export const Header: React.FC<IHeader> = ({ authUser }) => {
             <li className={styles.option} onClick={() => router.push(`/user/${user.id}`)}>
               Preferences
             </li>
-            <li className={cn(styles.option, 'text-red-500')}>Logout</li>
+            <li className={cn(styles.option, 'text-red-500')} onClick={onLogout}>
+              Logout
+            </li>
           </ul>
         </button>
       </div>

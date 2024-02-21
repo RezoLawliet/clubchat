@@ -2,6 +2,7 @@ import React from 'react'
 
 import cn from 'classnames'
 import { v4 as uuidv4 } from 'uuid'
+import { MdError } from 'react-icons/md'
 import { IoClose } from 'react-icons/io5'
 import { MdFileUpload } from 'react-icons/md'
 
@@ -14,16 +15,12 @@ import { Button } from '@/components/Button'
 
 import styles from './style.module.scss'
 
-import { createUser } from '@/core/firebase'
+import UserType from '@/core/models/UserModel'
+
+import { createUser } from '@/core/controllers/UserController'
 
 interface IUserEditor {
-  user: {
-    id: string
-    fullname: string
-    username: string
-    imageUrl?: string
-    description?: string
-  }
+  user: UserType
   isOpened: boolean
   onClose: () => void
 }
@@ -59,28 +56,40 @@ export const UserEditor: React.FC<IUserEditor> = ({ user, isOpened, onClose }) =
     return username
   }
 
+  const validate = () => {
+    if (name.trim().length < 4) {
+      setError('Name must be at least 4 characters')
+      return false
+    } else {
+      setError('')
+      return true
+    }
+  }
+
   const edit = async () => {
-    try {
-      const snapshot = {
-        fullname: name,
-        username: generateUuid(name),
-        ...(file !== null && { imageUrl: file }),
-        description,
+    if (validate()) {
+      try {
+        const snapshot = {
+          fullname: name,
+          username: generateUuid(name),
+          ...(file !== null && { imageUrl: file }),
+          description,
+        }
+        await createUser(user.id, snapshot)
+        toast.success('Preferences changes success', {
+          position: 'bottom-center',
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: 'colored',
+        })
+        onClose()
+      } catch (error) {
+        console.error(error)
       }
-      await createUser(user.id, snapshot)
-      toast.success('Preferences successfull changes', {
-        position: 'bottom-center',
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: 'colored',
-      })
-      onClose()
-    } catch (error) {
-      console.error(error)
     }
   }
 
@@ -117,11 +126,17 @@ export const UserEditor: React.FC<IUserEditor> = ({ user, isOpened, onClose }) =
               autoComplete="off"
               placeholder="Enter the new name"
             />
+            {error && (
+              <span className={styles.notification}>
+                <MdError className="w-5 h-5" />
+                {error}
+              </span>
+            )}
           </div>
           <div className={styles.section}>
             <span className={styles.option}>Description</span>
             <textarea
-              className={cn(styles.textarea, { [styles.error]: error })}
+              className={styles.textarea}
               value={description}
               onChange={(event) => setDescription(event.target.value)}
               autoComplete="off"

@@ -8,7 +8,7 @@ type RoomType = {
   key?: string
   members: UserType[]
   messages: MessageType[]
-  ruler: UserType
+  ruler: any
   timestamp: number
 }
 

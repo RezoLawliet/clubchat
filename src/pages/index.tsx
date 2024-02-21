@@ -13,7 +13,7 @@ export default function HomePage() {
   return (
     <>
       <Head>
-        <title>Clubhouse: Drop-in audio chat</title>
+        <title>ClubChat: Drop-in web-messanger</title>
       </Head>
       <Welcome />
     </>

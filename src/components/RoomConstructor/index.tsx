@@ -13,11 +13,13 @@ import { IoClose as CloseButton } from 'react-icons/io5'
 
 import { Modal } from '@/components/Modal'
 import { Button } from '@/components/Button'
-import { RoomType, UserType } from '@/components/Room'
 
 import styles from './style.module.scss'
 
-import { createRoom } from '@/core/firebase'
+import UserType from '@/core/models/UserModel'
+import RoomType from '@/core/models/RoomModel'
+
+import { createRoom } from '@/core/controllers/RoomController'
 
 const types = [
   {
@@ -78,18 +80,30 @@ export const RoomConstructor: React.FC<IRoomConstructor> = ({ user, room, isOpen
       setLoader(true)
       const timestamp = Date.now()
       try {
-        await createRoom(room?.id, {
-          topic,
-          type: types[type].destination,
-          ...(type === 1 && { key: String(generateSecretKey()) }),
-          timestamp,
-        })
-        onClose()
+        if (room?.id) {
+          await createRoom(room.id, {
+            topic,
+            type: types[type].destination,
+            ...(type === 1 && { key: String(generateSecretKey()) }),
+            timestamp,
+          })
+          onClose()
+          toast.success('Successfull change settings', {
+            position: 'bottom-center',
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: 'colored',
+          })
+        }
       } catch (error) {
         console.error(error)
-        toast.error('Error until the creation room', {
+        toast.error('Error until the change settings', {
           position: 'top-center',
-          autoClose: 7000,
+          autoClose: 3000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -115,12 +129,22 @@ export const RoomConstructor: React.FC<IRoomConstructor> = ({ user, room, isOpen
           ...(type === 1 && { key: String(generateSecretKey()) }),
           timestamp,
         })
+        toast.success('Successfull creation room', {
+          position: 'bottom-center',
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: 'colored',
+        })
         router.push(`/rooms/${id}`)
       } catch (error) {
         console.error(error)
         toast.error('Error until the creation room', {
           position: 'top-center',
-          autoClose: 7000,
+          autoClose: 3000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,

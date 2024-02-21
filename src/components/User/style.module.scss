@@ -52,7 +52,7 @@
     }
   }
   .about {
-    @apply mx-20 my-auto px-8 py-6 w-fit self-center bg-white rounded-2xl shadow-md;
+    @apply px-8 py-6 w-fit bg-white rounded-2xl shadow-md;
     p {
       @apply text-lg;
     }

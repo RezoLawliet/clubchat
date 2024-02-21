@@ -8,10 +8,9 @@ interface IAvatar {
   src?: string
   className?: string
   letters: string
-  isVoiced?: boolean
 }
 
-export const Avatar: React.FC<IAvatar> = ({ src, className, letters, isVoiced }) => {
+export const Avatar: React.FC<IAvatar> = ({ src, className, letters }) => {
   letters = letters
     ?.split(' ')
     .slice(0, 2)

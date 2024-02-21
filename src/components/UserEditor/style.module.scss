@@ -52,7 +52,7 @@
         @apply border-red-500 focus:border-red-500;
       }
       .notification {
-        @apply pl-2 gap-1 flex items-center text-left text-red-500;
+        @apply mt-0.5 pl-2 gap-1 flex items-center text-left text-red-500;
       }
     }
   }

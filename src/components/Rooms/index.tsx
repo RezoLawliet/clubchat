@@ -1,8 +1,6 @@
 import React from 'react'
 
-import { BsKeyFill } from 'react-icons/bs'
-import { BsEmojiAstonished } from 'react-icons/bs'
-
+import { Empty } from '@/components/Empty'
 import { Card } from '@/components/Card'
 import { Button } from '@/components/Button'
 import { RoomConstructor } from '@/components/RoomConstructor'
@@ -10,29 +8,24 @@ import { RoomFinder } from '@/components/RoomFinder'
 
 import styles from './style.module.scss'
 
+import UserType from '@/core/models/UserModel'
+import RoomType from '@/core/models/RoomModel'
+
+import { database } from '@/core/firebase'
 import { ref, onValue } from 'firebase/database'
-import { database, getAllRooms } from '@/core/firebase'
-import { Loader } from '../Loader'
-import { Empty } from '../Empty'
+import { getAllRooms } from '@/core/controllers/RoomController'
 
 interface IRooms {
-  authUser: {
-    id: string
-    fullname: string
-    username: string
-    imageUrl?: string
-  }
-  content: any[] | null
+  authUser: UserType
+  content: RoomType[] | null
 }
 
 export const Rooms: React.FC<IRooms> = ({ authUser, content }) => {
   const [rooms, setRooms] = React.useState(content)
   const [roomConstructor, setRoomConstructor] = React.useState(false)
   const [search, setSearch] = React.useState('')
-  const [isLoading, setIsLoading] = React.useState(false)
 
   const onSearch = (data: any[] | null) => {
-    setIsLoading(true)
     const collection: any[] = []
     data &&
       data.forEach((roomSnapshot) => {
@@ -45,7 +38,6 @@ export const Rooms: React.FC<IRooms> = ({ authUser, content }) => {
           setRooms(collection)
         }
       })
-    setIsLoading(false)
   }
 
   React.useEffect(() => {
@@ -84,16 +76,7 @@ export const Rooms: React.FC<IRooms> = ({ authUser, content }) => {
             </Button>
           </div>
         </div>
-        {isLoading ? (
-          <Loader />
-        ) : !rooms ? (
-          <Empty
-            className="mt-32"
-            emoji="😩"
-            title="No rooms here"
-            description="Unfortunately, nothing was found by your request."
-          />
-        ) : (
+        {rooms ? (
           <div className={styles.container}>
             {rooms.map((room: any) => (
               <Card
@@ -105,6 +88,13 @@ export const Rooms: React.FC<IRooms> = ({ authUser, content }) => {
               />
             ))}
           </div>
+        ) : (
+          <Empty
+            className="mt-32"
+            emoji="😩"
+            title="No rooms here"
+            description="Unfortunately, nothing was found by your request."
+          />
         )}
       </div>
     </main>

@@ -4,14 +4,13 @@ import { useRouter } from 'next/router'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
-import { auth, createUser } from '@/core/firebase'
-import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth'
-
 import { Button } from '@/components/Button'
 import { Loader } from '@/components/Loader'
 import { AuthCloud } from '@/pages/authentication'
 
 import styles from './style.module.scss'
+
+import { getUserById, createUser } from '@/core/controllers/UserController'
 
 export const Confirmation: React.FC = () => {
   const router = useRouter()
@@ -53,12 +52,37 @@ export const Confirmation: React.FC = () => {
     try {
       const data = await verifierKey.confirm(code.join(''))
       await createUser(data.user.uid, user)
-      router.push('/rooms')
+      const auth = await getUserById(data.user.uid)
+      if (auth) {
+        toast.success('Successfull authentication', {
+          position: 'bottom-center',
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: 'colored',
+        })
+        router.push('/rooms')
+      } else {
+        toast.error('Error until the creation on server', {
+          position: 'top-center',
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: 'colored',
+        })
+        setLoader(false)
+      }
     } catch (error) {
       console.error(error)
       toast.warning('Entered invalid SMS-code', {
         position: 'top-center',
-        autoClose: 7000,
+        autoClose: 4000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,

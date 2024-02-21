@@ -7,7 +7,6 @@ import nookies from 'nookies'
 import { Identification } from '@/components/GetStarted/Identification'
 import { Customization } from '@/components/GetStarted/Customization'
 import { Verification } from '@/components/GetStarted/Verification'
-import { Confirmation } from '@/components/GetStarted/Confirmation'
 
 import { getUserById } from '@/core/firebase'
 import { admin } from '@/core/firebase-admin'
@@ -16,7 +15,6 @@ const steps: any = {
   0: Identification,
   1: Customization,
   2: Verification,
-  3: Confirmation,
 }
 
 type UserType = {
@@ -27,8 +25,6 @@ type UserType = {
 }
 
 type AuthType = {
-  verifierKey?: any
-  setVerifierKey?: any
   user: UserType
   setUser?: React.Dispatch<React.SetStateAction<UserType>>
   setUserProps: (props: keyof UserType, value: File | string) => void
@@ -40,7 +36,6 @@ export const AuthCloud = React.createContext<AuthType>({} as AuthType)
 
 export default function AuthPage() {
   const [step, setStep] = React.useState(0)
-  const [verifierKey, setVerifierKey] = React.useState(null)
   const [user, setUser] = React.useState<UserType>({
     fullname: '',
     phone: '',
@@ -68,9 +63,7 @@ export default function AuthPage() {
       <Head>
         <title>Clubhouse: Get Started</title>
       </Head>
-      <AuthCloud.Provider
-        value={{ onNextStep, onPrevStep, user, setUser, setUserProps, verifierKey, setVerifierKey }}
-      >
+      <AuthCloud.Provider value={{ onNextStep, onPrevStep, user, setUser, setUserProps }}>
         <Step />
       </AuthCloud.Provider>
     </>

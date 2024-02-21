@@ -14,7 +14,7 @@ export default function RoomsPage({ authUser, content }: any) {
   return (
     <div className="container">
       <Head>
-        <title>Clubhouse: Conversations</title>
+        <title>ClubChat: Conversations</title>
       </Head>
       <Header authUser={authUser} />
       <Rooms authUser={authUser} content={content} />

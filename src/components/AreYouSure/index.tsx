@@ -1,17 +1,10 @@
 import React from 'react'
-import { useRouter } from 'next/router'
-
-import { createRoom, leaveRoom } from '@/core/firebase'
 
 import cn from 'classnames'
-import { v4 as uuidv4 } from 'uuid'
-import ReactHtmlParser from 'react-html-parser'
 
-import { IoClose as CloseButton } from 'react-icons/io5'
 import { Button } from '@/components/Button'
 
 import styles from './style.module.scss'
-import { Loader } from '../Loader'
 
 const types = [
   {
@@ -32,29 +25,26 @@ const types = [
 ]
 
 interface IModal {
+  topic: string
+  action: string
   isOpened: boolean
   onClose: () => void
-  onLeave: () => void
+  onSubmit: () => void
 }
 
-export const RoomLeave: React.FC<IModal> = ({ isOpened, onClose, onLeave }) => {
-  const router = useRouter()
-  const [topic, setTopic] = React.useState('')
-  const [type, setType] = React.useState(0)
-  const [loader, setLoader] = React.useState(false)
-
+export const AreYouSure: React.FC<IModal> = ({ topic, action, isOpened, onClose, onSubmit }) => {
   return (
     <div className={cn(styles.modal, { [styles.opened]: isOpened })}>
       <div className={styles.overlay} onClick={onClose}></div>
       <div className={styles.block}>
         <p className={styles.head}>Are you sure</p>
-        <span>Do you really wanna leave?</span>
+        <span>{topic}</span>
         <div className={styles.controls}>
           <Button color="transparent" onClick={onClose}>
             Cancel
           </Button>
-          <Button color="bordered" onClick={onLeave}>
-            Leave chat
+          <Button color="bordered" onClick={onSubmit}>
+            {action}
           </Button>
         </div>
       </div>

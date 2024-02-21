@@ -8,49 +8,46 @@ import { Avatar } from '@/components/Avatar'
 
 import styles from './style.module.scss'
 
-interface IUser {
-  id: string
-  fullname: string
-  username: string
-  imageUrl?: string
-}
+import UserType from '@/core/models/UserModel'
+import MessageType from '@/core/models/MessageModel'
 
 interface IMessage {
-  user: IUser
-  owner: IUser
-  message: string
-  type?: string
-  timestamp: number
+  user: UserType
+  message: MessageType
 }
 
-export const Message: React.FC<IMessage> = ({ user, owner, message, type, timestamp }) => {
+export const Message: React.FC<IMessage> = ({ user, message }) => {
   return (
     <>
-      {type === 'notification' ? (
-        <p className={styles.notification}>{message}</p>
+      {message.type === 'notification' ? (
+        <p className={styles.notification}>{message.message}</p>
       ) : (
         <div
           className={cn(styles.message, {
-            [styles.sended]: owner.id === user.id,
-            [styles.received]: owner.id !== user.id,
+            [styles.sended]: message.owner.id === user.id,
+            [styles.received]: message.owner.id !== user.id,
           })}
         >
-          {owner.id !== user.id && (
-            <Link className="m-1 self-end" href={`/user/${owner.id}`}>
-              <Avatar className="w-12 h-12" src={owner.imageUrl} letters={owner.fullname} />
+          {message.owner.id !== user.id && (
+            <Link className="m-1 self-end" href={`/user/${message.owner.id}`}>
+              <Avatar
+                className="w-12 h-12"
+                src={message.owner.imageUrl}
+                letters={message.owner.fullname}
+              />
             </Link>
           )}
           <div className={styles.block}>
-            {owner.id !== user.id && (
-              <Link href={`/user/${owner.id}`}>
-                <span className={styles.owner}>{owner.fullname}</span>
+            {message.owner.id !== user.id && (
+              <Link href={`/user/${message.owner.id}`}>
+                <span className={styles.owner}>{message.owner.fullname}</span>
               </Link>
             )}
-            {type === 'imageUrl' ? (
-              <img className={styles.image} src={message} alt="image" />
+            {message.type === 'imageUrl' ? (
+              <img className={styles.image} src={message.message} alt="image" />
             ) : (
               <div className={styles.container}>
-                {type !== 'imageUrl' && (
+                {message.type !== 'imageUrl' && (
                   <p>
                     <Linkify
                       componentDecorator={(href, text, key) => (
@@ -59,13 +56,13 @@ export const Message: React.FC<IMessage> = ({ user, owner, message, type, timest
                         </Link>
                       )}
                     >
-                      {message}
+                      {message.message}
                     </Linkify>
                   </p>
                 )}
                 <div className={styles.details}>
                   <span className={styles.timestamp}>
-                    {new Date(timestamp).toLocaleTimeString([], {
+                    {new Date(message.timestamp).toLocaleTimeString([], {
                       hour: '2-digit',
                       minute: '2-digit',
                     })}
